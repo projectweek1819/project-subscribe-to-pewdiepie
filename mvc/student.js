@@ -161,3 +161,20 @@ function counter7(){
     const model = { add, reset };
     return { controller, model };
 }
+
+function chronometer(state, dt){
+
+
+    function timePassed(state, dt){
+        return { elapsedTime: state.elapsedTime + dt };
+    }
+
+    function onTimerTick(state, dt){
+        return { elapsedTime: state.elapsedTime + dt };
+    }
+
+
+    const controller = {onTimerTick};
+    const model = { timePassed };
+    return { controller, model};
+}
