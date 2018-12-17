@@ -12,11 +12,22 @@ function isInside(grid, position) {
         for (let j = 0; j < grid[i].length; j++) {
             if (grid[i][j] === position) {
                 return true;
-            } else {
-                return false;
             }
-
         }
-
     }
+    return false;
 }
+
+function isInside(grid, position) {
+    const { x, y } = position;
+    return 0 <= x && x < width(grid) && 0 <= y && y < height(grid);
+}
+function swap(grid,p,q) {
+    const temp = grid[p.y][p.x];
+    grid[p.y][p.x] = grid[q.y][q.x];
+    grid[q.y][q.x] = temp;
+
+}
+
+
+
