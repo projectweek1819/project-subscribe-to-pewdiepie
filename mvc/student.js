@@ -278,7 +278,12 @@ function drawing(){
 
     function render(state){
         if (state.addMode){
-            return [{type: "circle", center: state.position, radius: 2, color: "red"}];
+            let foo = [];
+            for (let i = 0; i < state.dots.length; i++) {
+                foo.push({type: "circle", center: state.dots[i], radius: 2, color: "green"});
+            }
+            foo.push({type: "circle", center: state.position, radius: 2, color: "red"});
+            return foo;
         } else {
             let foo = [];
             for (let i = 0; i < state.dots.length; i++) {
@@ -343,6 +348,36 @@ function random(){
 
     const view = {render};
     const model = {throwDie};
+    const controller = {onKeyDown};
+    return {view, model, controller};
+}
+
+function random2(){
+
+    function nextRandom(n){
+        return (4578 * n ** 2 - 976161 * n + 6156489) % 79729693;
+    }
+
+    function throwDie(state){
+        return [nextRandom(state.rng) % 6 + 1, {rng: nextRandom(state.rng), grade: 0} ];
+    }
+
+    function generateGrade(state){
+
+    }
+
+    function onKeyDown(state, args){
+        if (args.key === " "){
+            return generateGrade(state);
+        }
+    }
+
+    function render(state){
+        return [{type: "text", position: {x: 50, y: 50}, string: state.grade.toString() }];
+    }
+
+    const view = {render};
+    const model = {nextRandom, throwDie, };
     const controller = {onKeyDown};
     return {view, model, controller};
 }
