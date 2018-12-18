@@ -1,100 +1,101 @@
 // Schrijf hier je code
-function onMouseDown(count, args) {
-    return count + 1;
+function onMouseDown(state, args) {
+    return state + 1;
 }
 
 function onMouseDown2(state, args) {
-    return {count : state.count + 1};
+    return { count: state.count + 1};
 }
-function counter3() {
+
+function counter3(){
     function onMouseDown(state, args) {
-        return {count : state.count + 1};
+        return { count: state.count + 1};
     }
-    return {controller: {onMouseDown}};
+
+    return { controller: { onMouseDown } };
+
 }
-function counter4() {
+
+function counter4(){
     function onMouseDown(state, args) {
-        return {count : state.count + 1};
+        return {count: state.count + 1};
     }
 
     function onKeyDown(state, args) {
-        return {count : 0 }
+        return {count: 0};
     }
 
-    return { controller : {onMouseDown, onKeyDown} };
-
+    return { controller: {onMouseDown, onKeyDown} };
 }
-function counter5() {
+
+function counter5(){
     function onMouseDown(state, args) {
-        if (args.shift) {
-            if (state.count >= 1) {
-                return {count : state.count - 1};
+        if (args.shift){
+            if (state.count >= 1){
+                return { count: state.count - 1};
             }
-        } else  {
-            return {count : state.count + 1};
+        } else {
+            return { count: state.count + 1};
         }
-        return{count: state.count}
+        return { count: state.count};
     }
 
     function onKeyDown(state, args) {
-        if (args.key === "ArrowUp") {
-            return {count: state.count + 1 }
-        }else if (args.key === "ArrowDown") {
-            if (state.count >= 1) {
-                return{count: state.count - 1};
+        if (args.key === "ArrowUp"){
+            return { count: state.count + 1};
+        }
+        if(args.key === "ArrowDown"){
+            if (state.count >= 1){
+                return { count: state.count - 1};
             }
         }
-        if (args.key === "0") {
-            return {count: 0}
+        if (args.key === "0"){
+            return { count: 0};
         }
-        return{count: state.count}
-
+        return { count: state.count};
     }
-    return{controller : {onMouseDown, onKeyDown}}
+
+    return { controller: {onMouseDown, onKeyDown} };
 }
 
 function counter6() {
     function increment(state) {
-        return {count: state.count + 1}
+        return { count: state.count + 1};
     }
 
     function decrement(state) {
-        if (state.count >= 1) {
-        return{count: state.count - 1};}
-
-    return{count: state.count}
+        if (state.count >= 1){
+            return { count: state.count - 1};
+        }
+        return { count: state.count}
     }
 
     function reset(state) {
-        return {count: 0}
+        return { count: 0};
     }
 
     function onMouseDown(state, args) {
-        if (args.shift === true) {
+        if (args.shift === true){
             return decrement(state);
-        } else {
+        }else{
             return increment(state);
         }
     }
 
     function onKeyDown(state, args) {
-        if (args.key === "ArrowUp") {
+        if (args.key === "ArrowUp"){
             return increment(state);
         }
-        else if (args.key === "ArrowDown") {
-            if (state.count >= 1) {
-                return decrement(state);
-            }
-            return {count: state.count}
+        if(args.key === "ArrowDown"){
+            return decrement(state);
         }
-        else if (args.key === " ") {
+        if (args.key === "0"){
+            return reset(state);
+        }
+        if (args.key === " "){
             return increment(state);
         }
-        else if (args.key === "0") {
-            return {count: 0}
-        }
-        return{count: state.count}
-        
+        return { count: state.count};
     }
 
     const controller = { onMouseDown, onKeyDown };
@@ -160,6 +161,7 @@ function counter7(){
     const model = { add, reset };
     return { controller, model };
 }
+
 function chronometer(state, dt){
 
 
@@ -176,6 +178,7 @@ function chronometer(state, dt){
     const model = { timePassed };
     return { controller, model};
 }
+
 function chronometer2(){
 
     function timePassed(state, dt){
@@ -217,6 +220,7 @@ function chronometer2(){
     const model = { timePassed, toggle, reset };
     return { controller, model};
 }
+
 function circle(){
 
     function render(state){
@@ -258,7 +262,6 @@ function circle3(){
 
     function moveTo(state, position){
         return {position: position};
-
     }
 
     function onMouseMove(state, args) {
@@ -270,18 +273,23 @@ function circle3(){
     const controller = {onMouseMove};
     return {view, model, controller};
 }
+
 function drawing(){
 
     function render(state){
         if (state.addMode){
-            return [{type: "circle", center: state.position, radius: 2, color: "red"}];
+            let foo = [];
+            for (let i = 0; i < state.dots.length; i++) {
+                foo.push({type: "circle", center: state.dots[i], radius: 2, color: "green"});
+            }
+            foo.push({type: "circle", center: state.position, radius: 2, color: "red"});
+            return foo;
         } else {
             let foo = [];
             for (let i = 0; i < state.dots.length; i++) {
                 foo.push({type: "circle", center: state.dots[i], radius: 2, color: "green"});
             }
             foo.push({type: "circle", center: state.position, radius: 5, color: "red"});
-            console.log(foo);
             return foo;
         }
 
@@ -314,6 +322,7 @@ function drawing(){
         return {position: state.position, dots: state.dots, addMode: false};
     }
 
+
     const view = {render};
     const model = {moveTo, setAddMode};
     const controller = {onMouseMove, onMouseDown, onMouseUp};
@@ -342,34 +351,36 @@ function random(){
     const controller = {onKeyDown};
     return {view, model, controller};
 }
-function random2() {
-    const model = (() => {
-        function nextRandom(n) {
-            return (4578 * n ** 2 - 976161 * n + 6156489) % 79729693;
+
+function random2(){
+
+    function nextRandom(n){
+        return (4578 * n ** 2 - 976161 * n + 6156489) % 79729693;
+    }
+
+    function throwDie(state){
+        return [nextRandom(state.rng) % 6 + 1, {rng: nextRandom(state.rng), grade: 0} ];
+    }
+
+    function generateGrade(state) {
+        const [a, state2] = throwDie(state);
+        const [b, state3] = throwDie(state2);
+        const [c, state4] = throwDie(state3);
+        return { ...state4, grade: a + b + c };
+    }
+
+    function onKeyDown(state, args){
+        if (args.key === " "){
+            return generateGrade(state);
         }
-        function throwDie(state) {
-            const value = nextRandom(state.rng);
-            return [value % 6 + 1, { ...state, rng: value }];
-        }
-        function generateGrade(state) {
-            const [a, state2] = throwDie(state);
-            const [b, state3] = throwDie(state2);
-            const [c, state4] = throwDie(state3);
-            return { ...state4, grade: a + b + c };
-        }
-        return { nextRandom, throwDie, generateGrade };
-    })();
-    const controller = (() => {
-        function onKeyDown(state, args) {
-            return model.generateGrade(state);
-        }
-        return { onKeyDown };
-    })();
-    const view = (() => {
-        function render(state) {
-            return [{ type: 'text', position: { x: 50, y: 50 }, string: state.grade.toString() }];
-        }
-        return { render };
-    })();
-    return { model, view, controller };
+    }
+
+    function render(state){
+        return [{type: "text", position: {x: 50, y: 50}, string: state.grade.toString() }];
+    }
+
+    const view = {render};
+    const model = {nextRandom, throwDie, generateGrade};
+    const controller = {onKeyDown};
+    return {view, model, controller};
 }
