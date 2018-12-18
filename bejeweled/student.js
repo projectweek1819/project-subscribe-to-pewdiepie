@@ -104,16 +104,17 @@ function removeChains(grid) {
     return result;
 }
 
-function collapse(grid) {
-    let collapsed = false;
-    for (let x = 0; x < width(grid)-1; x++) {
-
-        for (let y = height(grid)-1; y > 0; y--) {
-            if (grid[y][x] == "") {
-                
+function collapse(grid){
+    for (let y = height(grid) - 1; y > 0; y--){
+        for(let x = 0; x < width(grid); x++){
+            for (let y = height(grid) - 1; y > 0; y--){
+                var q = {x, y};
+                q.y = y-1;
+                if( grid[y][x] == ""){
+                    swap(grid, {x, y}, q);
+                }
             }
         }
-
     }
 }
 
