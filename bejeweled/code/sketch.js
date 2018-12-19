@@ -10,10 +10,6 @@ let grid = [...Array(fieldWidth / spacer)].map(e => Array(fieldHeight / spacer))
 let x = 0;
 let y = 0;
 
-//AUDIO
-var themeSong;
-var pewNews;
-
 //IMAGES
 let blueStone;
 let greenStone;
@@ -24,7 +20,24 @@ let yellowStone;
 let selector;
 let darkSlate;
 let lightSlate;
-let background
+let background;
+
+//MOVES
+let moves = 2;
+
+//SCORE
+let score = 0;
+let target = 20000;
+let start = false;
+
+//AUDIO
+let themeSong;
+let chain4PrettyGood;
+let chain5PewPew;
+let epicVictoryRoyal;
+let victory = true;
+//VIDEO
+let failure = true;
 
 function Stone(color, selected, position){
     this.color = color;
@@ -50,10 +63,16 @@ function preload(){
     lightSlate = loadImage("images/lightSlate.png");
     background = loadImage("images/background.png");
 
+    //FONTS
+    font = loadFont('font/upheavtt.ttf');
+
 }
 
 function setup() {
 
+    textFont(font);
+    textSize(20);
+    textAlign(CENTER, CENTER);
     createCanvas(canvasWidth, canvasHeight);
 
     for (let i = 0; i < fieldWidth / spacer; i++) {
@@ -65,13 +84,17 @@ function setup() {
 
         }
     }
+
     themeSong = new sound("sounds/theme.mp3");
-    pewNews = new sound("sounds/pew.mp3");
+    chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
+    chain5PewPew = new sound("sounds/chain5Pew.mp3");
+    epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
+
     themeSong.play();
     themeSong.volume = 0.2;
 
-    console.log(grid);
 }
+
 function sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
@@ -85,6 +108,19 @@ function sound(src) {
     this.stop = function(){
         this.sound.pause();
     };
+}
+function video() {
+    var x = document.createElement("VIDEO");
+
+    x.setAttribute("src","videos/youDied2.mp4");
+
+    x.setAttribute("width", "1000px");
+    x.setAttribute("height", "1000px");
+
+    x.setAttribute("autoplay", "autoplay");
+    document.body.appendChild(x);
+
+    x.webkitEnterFullScreen();
 }
 
 function playGround(){
@@ -192,18 +228,49 @@ function removeChains() {
             let horizontal = horizontalChainAt(i,j);
             let vertical = verticalChainAt(i,j);
 
+            if (start){
+                if (horizontal === 3){
+                    score += 500;
+
+                }
+
+                if (horizontal === 4){
+                    score += 2000;
+                    chain4PrettyGood.play();
+                }
+
+                if (horizontal === 5){
+                    score += 10000;
+                    chain5PewPew.play();
+                }
+
+                if (vertical === 3){
+                    score += 500;
+
+                }
+
+                if (vertical === 4){
+                    score += 500;
+                    chain4PrettyGood.play();
+                }
+
+                if (vertical === 5){
+                    score += 500;
+                    chain5PewPew.play();
+                }
+
+            }
+
             if (horizontal >= 3){
                 for (let k = 0; k < horizontal; k++) {
                     grid[i + k][j].color = 0;
                 }
-                pewNews.play();
             }
 
             if (vertical >= 3){
                 for (let k = 0; k < vertical; k++) {
                     grid[i][j + k].color = 0;
                 }
-                pewNews.play();
             }
         }
     }
@@ -262,16 +329,44 @@ function legalSwap(x, y){
 
 }
 
+function drawWords(){
+    text("MOVES", 235, 40);
+    text(moves, 235, 60);
+    text("SCORE", 500, 40);
+    text(score, 500, 60);
+    text("TARGET", 790, 40);
+    text(target, 790, 60)
+}
+
 function draw() {
 
     image(background, 0, 0, canvasWidth, canvasHeight);
 
+    drawWords();
     removeChains();
     collapse();
     spawn();
     playGround();
 
+    if (score >= target && victory){
+        themeSong.stop();
+        epicVictoryRoyal.play();
+        victory = false;
+        noLoop();
+    }
+
+    if (moves === 0 && score < target && failure) {
+        themeSong.stop();
+        collapse();
+        spawn();
+        video();
+        failure = false;
+        noLoop();
+    }
+
     if (mouseIsPressed){
+
+        start = true;
 
         let oldX = x;
         let oldY = y;
@@ -301,6 +396,8 @@ function draw() {
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
 
+                moves--;
+
                 let foo = false;
 
                 if (legalSwap(oldX, oldY)){
@@ -313,6 +410,7 @@ function draw() {
 
                 if (!foo){
                     swap(grid[oldX][oldY], grid[newX][newY]);
+                    moves++;
                 }
 
             }else{
