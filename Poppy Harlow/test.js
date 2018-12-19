@@ -609,7 +609,7 @@ window.onload = function() {
             for (var i=0; i<level.columns-1; i++) {
                 // Swap, find clusters and swap back
                 swap(i, j, i+1, j);
-                findClusters();
+                findClust ers();
                 swap(i, j, i+1, j);
 
                 // Check if the swap made a cluster
