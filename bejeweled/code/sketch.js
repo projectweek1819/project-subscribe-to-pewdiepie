@@ -23,11 +23,11 @@ let lightSlate;
 let background;
 
 //MOVES
-let moves = 25;
+let moves = 40;
 
 //SCORE
 let score = 0;
-let target = 10000;
+let target = 50000;
 let start = false;
 
 //AUDIO
@@ -85,6 +85,7 @@ function video() {
 
     x.webkitEnterFullScreen();
 }
+
 function gif2() {
     let y = document.createElement("IMG");
     y.setAttribute("src", "videos/thanosclear.gif");
@@ -94,6 +95,7 @@ function gif2() {
     y.setAttribute("class", "thanos2");
     document.body.appendChild(y);
 }
+
 function gif() {
     let x = document.createElement("IMG");
 
@@ -108,7 +110,6 @@ function gif() {
     document.body.appendChild(x);
 
 }
-
 
 function setup() {
 
@@ -361,7 +362,6 @@ function collapse(){
 
     for (let i = grid[0].length - 1; i >= 0; i--) {
         for (let j = grid.length - 1; j >= 0; j--) {
-
             if (j !== 0 && grid[i][j].color === 0){
                 swap(grid[i][j], grid[i][j - 1]);
             }
@@ -446,20 +446,16 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
     let colorY = gridY.color;
 
     if (gridX.position.x > gridY.position.x){
-        console.log("left");
         shiftLeft = true;
     }
     else if(gridX.position.x < gridY.position.x){
-        console.log("right");
         shiftRight = true;
     }
     else{
         if (gridX.position.y > gridY.position.y){
-            console.log("top");
             shiftTop = true;
         }
         else{
-            console.log("bottom");
             shiftBottom = true;
         }
     }
@@ -478,7 +474,7 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
             drawStone(coordYx, coordYy, coordX.x--, coordX.y);
             drawStone(coordXx, coordXy,coordY.x++, coordY.y);
 
-        }, 0, 50);
+        }, 10, 50);
 
     }
 
@@ -496,7 +492,7 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
             drawStone(coordYx, coordYy, coordX.x++, coordX.y);
             drawStone(coordXx, coordXy,coordY.x--, coordY.y);
 
-        }, 0, 50);
+        }, 10, 50);
 
     }
 
@@ -514,7 +510,7 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
             drawStone(coordYx, coordYy, coordX.x, coordX.y--);
             drawStone(coordXx, coordXy,coordY.x, coordY.y++);
 
-        }, 0, 50);
+        }, 10, 50);
 
     }
 
@@ -532,7 +528,7 @@ function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
             drawStone(coordYx, coordYy, coordX.x, coordX.y++);
             drawStone(coordXx, coordXy,coordY.x, coordY.y--);
 
-        }, 0, 50);
+        }, 10, 50);
 
     }
 
@@ -548,10 +544,6 @@ function draw() {
     spawn();
     playGround();
 
-    if (endGame){
-        noLoop();
-    }
-
     if (score >= target && victory){
         gif();
         gif2();
@@ -559,7 +551,6 @@ function draw() {
         epicVictoryRoyal.play();
         collapse();
         spawn();
-        score = 20000;
         victory = false;
         endGame = true;
     }
@@ -573,7 +564,7 @@ function draw() {
         endGame = true;
     }
 
-    if (mouseIsPressed){
+    if (mouseIsPressed && !endGame){
 
         start = true;
 
