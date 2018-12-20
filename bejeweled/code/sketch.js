@@ -23,26 +23,30 @@ let lightSlate;
 let background;
 
 //MOVES
-let moves = 2;
+let moves = 25;
 
 //SCORE
 let score = 0;
-let target = 20000;
+let target = 10000;
 let start = false;
 
 //AUDIO
-let themeSong;
+
 let chain4PrettyGood;
-let chain5PewPew;
+let chain5Pew;
 let epicVictoryRoyal;
 let victory = true;
+
 //VIDEO
 let failure = true;
+let endGame = false;
 
-function Stone(color, selected, position){
+
+function Stone(color, position){
     this.color = color;
-    this.selected = selected;
+    this.selected = false;
     this.position = position;
+    this.delete = false;
 }
 
 function Position(x, y){
@@ -68,47 +72,6 @@ function preload(){
 
 }
 
-function setup() {
-
-    textFont(font);
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    createCanvas(canvasWidth, canvasHeight);
-
-    for (let i = 0; i < fieldWidth / spacer; i++) {
-        for (let j = 0; j < fieldHeight / spacer; j++) {
-
-            let rng = int(random(6) + 1);
-
-            grid[i][j] = new Stone(rng, false, new Position(i * spacer + paddingLeft, j * spacer + paddingTop));
-
-        }
-    }
-
-    themeSong = new sound("sounds/theme.mp3");
-    chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
-    chain5PewPew = new sound("sounds/chain5Pew.mp3");
-    epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
-
-    themeSong.play();
-    themeSong.volume = 0.2;
-
-}
-
-function sound(src) {
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function(){
-        this.sound.play();
-    };
-    this.stop = function(){
-        this.sound.pause();
-    };
-}
 function video() {
     var x = document.createElement("VIDEO");
 
@@ -122,13 +85,87 @@ function video() {
 
     x.webkitEnterFullScreen();
 }
+function gif2() {
+    let y = document.createElement("IMG");
+    y.setAttribute("src", "videos/thanosclear.gif");
+    y.setAttribute("width", "304");
+    y.setAttribute("height", "228");
+    y.setAttribute("alt", "thanosmeme");
+    y.setAttribute("class", "thanos2");
+    document.body.appendChild(y);
+}
+function gif() {
+    let x = document.createElement("IMG");
+
+    x.setAttribute("src", "videos/thanosclear.gif");
+
+    x.setAttribute("width", "304");
+    x.setAttribute("height", "228");
+
+    x.setAttribute("alt", "thanosmeme1");
+    x.setAttribute("class", "thanos1");
+
+    document.body.appendChild(x);
+
+}
+
+
+function setup() {
+
+    textFont(font);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    createCanvas(canvasWidth, canvasHeight);
+
+    for (let i = 0; i < fieldWidth / spacer; i++) {
+        for (let j = 0; j < fieldHeight / spacer; j++) {
+
+            let rng = int(random(6) + 1);
+
+            grid[i][j] = new Stone(rng, new Position(i * spacer + paddingLeft, j * spacer + paddingTop));
+
+        }
+    }
+
+    let i = 1;
+    document.getElementById('audio').addEventListener('ended', function(){
+        if (i === 4) {
+            i = 0;
+        }
+        i++;
+        nextSong = "sounds/"+i+".mp3";
+        audioPlayer = document.getElementById('audio');
+        audioPlayer.src = nextSong;
+        audioPLayer.load();
+        audioPlayer.play();
+
+    }, false);
+
+    epicVictoryRoyal = new sound("sounds/epicVictoryRoyal.mp3");
+    chain4PrettyGood = new sound("sounds/chain4PrettyGood.mp3");
+    chain5Pew = new sound("sounds/chain5Pew.mp3");
+
+}
+
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    };
+}
 
 function playGround(){
 
-    //STONES
     for (let i = 0; i < grid[0].length; i++) {
         for (let j = 0; j < grid.length; j++) {
 
+
+            //SLATES
             if ((i + j) % 2 !== 0){
                 image(darkSlate, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
             } else {
@@ -139,47 +176,60 @@ function playGround(){
                 image(selector, grid[i][j].position.x, grid[i][j].position.y, spacer, spacer);
             }
 
-            let stone;
-
-            if (!(grid[i][j].color === 0)){
-                switch(grid[i][j].color){
-                    case 1:
-                        //BLAUW
-                        stone = blueStone;
-                        break;
-
-                    case 2:
-                        //GEEL
-                        stone = yellowStone;
-                        break;
-
-                    case 3:
-                        //ROOD
-                        stone = redStone;
-                        break;
-
-                    case 4:
-                        //PAARS
-                        stone = purpleStone;
-                        break;
-
-                    case 5:
-                        //GROEN
-                        stone = greenStone;
-                        break;
-
-                    case 6:
-                        //ORANJE
-                        stone = orangeStone;
-                        break;
-                }
-
-                image(stone, grid[i][j].position.x + 13, grid[i][j].position.y + 8, 25, 35);
-
+            //DELETE DELETE STONE
+            if (grid[i][j].delete){
+                grid[i][j].color = 0;
+                grid[i][j].delete = false;
             }
+
+            //COLOR STONES
+            drawStone(i, j, grid[i][j].position.x , grid[i][j].position.y);
         }
     }
 
+}
+
+function drawStone(i, j, coordX, coordY ){
+    let stone;
+
+    if (!(grid[i][j].color === 0)){
+        switch(grid[i][j].color){
+            case 1:
+                //BLAUW
+                stone = blueStone;
+                break;
+
+            case 2:
+                //GEEL
+                stone = yellowStone;
+                break;
+
+            case 3:
+                //ROOD
+                stone = redStone;
+                break;
+
+            case 4:
+                //PAARS
+                stone = purpleStone;
+                break;
+
+            case 5:
+                //GROEN
+                stone = greenStone;
+                break;
+
+            case 6:
+                //ORANJE
+                stone = orangeStone;
+                break;
+        }
+
+        //DRAW STONES
+        image(stone, coordX + 13, coordY + 8, 25, 35);
+
+
+    }
 }
 
 function swap(p, q){
@@ -220,56 +270,87 @@ function verticalChainAt(x, y) {
 
 }
 
+function removeHorizontal(x){
+    for (let i = 0; i < grid[0].length; i++) {
+        grid[i][x].delete = true;
+    }
+}
+
 function removeChains() {
 
     for (let i = 0; i < grid[0].length; i++) {
         for (let j = 0; j < grid.length; j++) {
 
-            let horizontal = horizontalChainAt(i,j);
-            let vertical = verticalChainAt(i,j);
+            if (grid[i][j].color !== 0){
+                let horizontal = horizontalChainAt(i,j);
+                let vertical = verticalChainAt(i,j);
 
-            if (start){
                 if (horizontal === 3){
-                    score += 500;
-
+                    for (let k = 0; k < horizontal; k++) {
+                        grid[i + k][j].delete = true;
+                    }
                 }
 
                 if (horizontal === 4){
-                    score += 2000;
-                    chain4PrettyGood.play();
+                    for (let k = 0; k < horizontal; k++) {
+                        grid[i + k][j].delete = true;
+                    }
                 }
 
                 if (horizontal === 5){
-                    score += 10000;
-                    chain5PewPew.play();
+                    for (let k = 0; k < horizontal; k++) {
+                        grid[i + k][j].delete = true;
+                    }
                 }
 
                 if (vertical === 3){
-                    score += 500;
-
+                    for (let k = 0; k < vertical; k++) {
+                        grid[i][j + k].delete = true;
+                    }
                 }
 
                 if (vertical === 4){
-                    score += 500;
-                    chain4PrettyGood.play();
+                    for (let k = 0; k < vertical; k++) {
+                        grid[i][j + k].delete = true;
+                    }
                 }
 
                 if (vertical === 5){
-                    score += 500;
-                    chain5PewPew.play();
+                    for (let k = 0; k < vertical; k++) {
+                        grid[i][j + k].delete = true;
+                    }
                 }
 
-            }
+                if (start){
+                    if (horizontal === 3){
+                        score += 500;
+                    }
 
-            if (horizontal >= 3){
-                for (let k = 0; k < horizontal; k++) {
-                    grid[i + k][j].color = 0;
-                }
-            }
+                    if (horizontal === 4){
+                        score += 2000;
+                        chain4PrettyGood.play();
+                    }
 
-            if (vertical >= 3){
-                for (let k = 0; k < vertical; k++) {
-                    grid[i][j + k].color = 0;
+                    if (horizontal === 5){
+                        score += 10000;
+                        chain5Pew.play();
+                    }
+
+                    if (vertical === 3){
+                        score += 500;
+
+                    }
+
+                    if (vertical === 4){
+                        score += 500;
+                        chain4PrettyGood.play();
+                    }
+
+                    if (vertical === 5){
+                        score += 500;
+                        chain5Pew.play();
+                    }
+
                 }
             }
         }
@@ -284,14 +365,13 @@ function collapse(){
             if (j !== 0 && grid[i][j].color === 0){
                 swap(grid[i][j], grid[i][j - 1]);
             }
-
         }
     }
 }
 
 function spawn(){
     for (let i = 0; i <= grid[0].length - 1; i++) {
-        if (grid[i][0].color === 0){
+        if (grid[i][0].color === 0 && grid[i][0].delete === false){
             grid[i][0].color = int(random(6) + 1);
         }
     }
@@ -338,6 +418,126 @@ function drawWords(){
     text(target, 790, 60)
 }
 
+function setIntervalX(callback, delay, repetitions) {
+    var x = 0;
+    var intervalID = setInterval(function () {
+
+        callback();
+
+        if (++x === repetitions) {
+            clearInterval(intervalID);
+            loop();
+        }
+    }, delay);
+
+}
+
+function animation(gridX, coordXx, coordXy ,gridY, coordYx, coordYy){
+
+    let shiftTop;
+    let shiftBottom;
+    let shiftLeft;
+    let shiftRight;
+
+    let coordX = new Position(gridX.position.x, gridX.position.y);
+    let coordY = new Position(gridY.position.x, gridY.position.y);
+
+    let colorX = gridX.color;
+    let colorY = gridY.color;
+
+    if (gridX.position.x > gridY.position.x){
+        console.log("left");
+        shiftLeft = true;
+    }
+    else if(gridX.position.x < gridY.position.x){
+        console.log("right");
+        shiftRight = true;
+    }
+    else{
+        if (gridX.position.y > gridY.position.y){
+            console.log("top");
+            shiftTop = true;
+        }
+        else{
+            console.log("bottom");
+            shiftBottom = true;
+        }
+    }
+
+    if (shiftLeft){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordYx, coordYy, coordX.x--, coordX.y);
+            drawStone(coordXx, coordXy,coordY.x++, coordY.y);
+
+        }, 0, 50);
+
+    }
+
+    if (shiftRight){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordYx, coordYy, coordX.x++, coordX.y);
+            drawStone(coordXx, coordXy,coordY.x--, coordY.y);
+
+        }, 0, 50);
+
+    }
+
+    if (shiftTop){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordYx, coordYy, coordX.x, coordX.y--);
+            drawStone(coordXx, coordXy,coordY.x, coordY.y++);
+
+        }, 0, 50);
+
+    }
+
+    if (shiftBottom){
+
+        noLoop();
+
+        setIntervalX(function () {
+            gridX.color = 0;
+            gridY.color = 0;
+            playGround();
+
+            gridX.color = colorX;
+            gridY.color = colorY;
+            drawStone(coordYx, coordYy, coordX.x, coordX.y++);
+            drawStone(coordXx, coordXy,coordY.x, coordY.y--);
+
+        }, 0, 50);
+
+    }
+
+}
+
 function draw() {
 
     image(background, 0, 0, canvasWidth, canvasHeight);
@@ -348,20 +548,29 @@ function draw() {
     spawn();
     playGround();
 
-    if (score >= target && victory){
-        themeSong.stop();
-        epicVictoryRoyal.play();
-        victory = false;
+    if (endGame){
         noLoop();
     }
 
+    if (score >= target && victory){
+        gif();
+        gif2();
+        audio.pause();
+        epicVictoryRoyal.play();
+        collapse();
+        spawn();
+        score = 20000;
+        victory = false;
+        endGame = true;
+    }
+
     if (moves === 0 && score < target && failure) {
-        themeSong.stop();
+        audio.pause();
         collapse();
         spawn();
         video();
         failure = false;
-        noLoop();
+        endGame = true;
     }
 
     if (mouseIsPressed){
@@ -396,6 +605,7 @@ function draw() {
                 grid[newX][newY].selected = false;
                 swap(grid[oldX][oldY], grid[newX][newY]);
 
+
                 moves--;
 
                 let foo = false;
@@ -411,6 +621,8 @@ function draw() {
                 if (!foo){
                     swap(grid[oldX][oldY], grid[newX][newY]);
                     moves++;
+                }else{
+                    animation(grid[oldX][oldY], oldX, oldY,grid[newX][newY], newX, newY);
                 }
 
             }else{
@@ -422,8 +634,5 @@ function draw() {
             y = newY;
 
         }
-
     }
-
-
 }
